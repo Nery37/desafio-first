@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  application:
+    container_name: first-api
+    build:
+      context: ./
+      dockerfile: .setup/Dockerfile
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8100:80"
+    networks:
+      - first
+
+  first-redis:
+    image: redis:latest
+    container_name: first-redis
+    ports:
+        - "6379:6379"
+    networks:
+      - first
+
+#  redis-commander:
+#    container_name: redis-commander
+#    image: rediscommander/redis-commander
+#    environment:
+#      - REDIS_HOSTS=redis:redis:6379
+#    depends_on:
+#      - redis
+#    ports:
+#        - "8102:8081"
+#    networks:
+#      - first
+
+  postgres:
+    image: postgres:latest
+    container_name: first-db-postgres
+    restart: unless-stopped
+    tty: true
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: postgres
+    volumes:
+      - ./.docker/postgres:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:5432
+    expose:
+      - 5432
+    networks:
+      - first
+
+#  mongo:
+#    image: mongo:5.0.3
+#    container_name: mongo
+#    volumes:
+#      - ./.docker/mongo:/data/db
+#    networks:
+#      - first
+
+#  mongo-express:
+#    image: mongo-express
+#    container_name: mongo-express
+#    restart: always
+#    ports:
+#      - "8101:8081"
+#    networks:
+#      - first
+
+#  zookeeper:
+#    image: confluentinc/cp-zookeeper:6.2.4
+#    container_name: credit-guarantor-backend-zookeeper
+#    environment:
+#        ZOOKEEPER_CLIENT_PORT: 2181
+#        ZOOKEEPER_TICK_TIME: 2000
+#    networks:
+#        - first
+
+#   kafka:
+#     image: confluentinc/cp-kafka:latest
+#     container_name: credit-guarantor-backend-kafka
+#     depends_on:
+#         - zookeeper
+#     environment:
+#         KAFKA_BROKER_ID: 1
+#         KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#         KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+#         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+#         KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+#         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#         KAFKA_CREATE_TOPICS: ""
+#     volumes:
+#         - .docker-volumes/kafka:/data/db
+#     networks:
+#         - first
+
+networks:
+  first:
+    driver: bridge
