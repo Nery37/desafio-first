@@ -151,6 +151,11 @@
                         title: 'Registro bem-sucedido!',
                         text: 'Você foi registrado com sucesso.',
                     });
+                    $('input[name=name]').val('');
+                    $('input[name=email]').val('');
+                    $('input[name=password]').val('');
+                    $('input[name=password_confirmation]').val('');
+                    $('#registerBtn').prop('disabled', true);
                 },
                 error: function(xhr) {
                     Swal.fire({
