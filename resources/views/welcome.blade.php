@@ -55,6 +55,11 @@
             border-radius: 4px 4px 0 0;
         }
 
+        .error{
+            color: red;
+            font-weight: bold;
+        }
+
         h4 {
             font-size: 2rem !important;
             font-weight: 700;

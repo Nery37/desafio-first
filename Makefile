@@ -1,10 +1,10 @@
 CONTAINER_NAME=first-api
 
 install:
-	make build
 	make up
 	make composer-install
 	make migrate
+	make permission
 
 up:
 	docker-compose up -d
@@ -13,14 +13,21 @@ down:
 	docker-compose down
 
 bash:
-	make up
 	docker exec -it $(CONTAINER_NAME) sh
+
+permission:
+	docker exec -it $(CONTAINER_NAME) sh -c "chmod -R 777 ./"
 
 build:
 	docker-compose build
 
+force-recreate:
+	docker-compose up -d --force-recreate --build
+
 composer-install:
-	docker exec $(CONTAINER_NAME) composer install --no-interaction --no-scripts
+	make up
+	docker exec -t $(CONTAINER_NAME) composer install
+	docker exec -t $(CONTAINER_NAME) php artisan key:generate
 
 migrate:
 	docker exec $(CONTAINER_NAME) php artisan migrate --seed
@@ -28,23 +35,22 @@ migrate:
 test:
 ifdef FILTER
 	make up
-	#make clear
 	docker exec -t $(CONTAINER_NAME) composer unit-test -- --filter="$(FILTER)"
 else
 	make up
-	#make clear
 	docker exec -t $(CONTAINER_NAME) composer unit-test
 endif
 
 logs:
+	make up
 	docker-compose logs --follow
 
 clear:
+	make up
 	docker exec $(CONTAINER_NAME) sh -c "php artisan optimize:clear"
 
 coverage-html:
-	make up
-	#make clear
+	make clear
 	docker exec -t $(CONTAINER_NAME) composer test-coverage-html
 
 format:
