@@ -20,7 +20,7 @@ Route::get('health', function () {
     return response()->json(['message' => 'FIRST']);
 });
 
-Route::post('user', [UsersController::class, 'createUser'])->name('register');;
+Route::post('user', [UsersController::class, 'createUser'])->name('register');
 
 
 Route::any('/{any}', function () {

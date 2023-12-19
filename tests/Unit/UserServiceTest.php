@@ -21,7 +21,7 @@ class UserServiceTest extends TestCase
         $this->userService = new UserService($this->mockUserRepository);
     }
 
-    public function testCreateUserSuccessfully()
+    public function test_create_user_successfully()
     {
         DB::beginTransaction();
 
