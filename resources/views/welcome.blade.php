@@ -55,7 +55,7 @@
             border-radius: 4px 4px 0 0;
         }
 
-        .error{
+        .error {
             color: red;
             font-weight: bold;
         }
@@ -67,6 +67,19 @@
 
         .form-label {
             font-weight: 800 !important;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
 
         @media only screen and (max-width: 600px) {
@@ -140,7 +153,17 @@
             });
         });
 
+        function showLoadingOverlay() {
+            document.querySelector('.loading-overlay').style.display = 'flex';
+            $("#registerBtn").prop("disabled", true);
+        }
+
+        function hideLoadingOverlay() {
+            document.querySelector('.loading-overlay').style.display = 'none';
+        }
+
         function registerUser() {
+            showLoadingOverlay();
             $.ajax({
                 type: 'POST',
                 url: '{{ route("register") }}',
@@ -169,6 +192,10 @@
                         text: 'Houve um erro ao processar o registro. Por favor, corrija os erros abaixo:',
                         html: formatErrors(xhr.responseJSON.errors)
                     });
+                    $('#registerBtn').prop('disabled', false);
+                },
+                complete: function() {
+                    hideLoadingOverlay();
                 }
             });
         }
@@ -209,6 +236,11 @@
                 <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
             </div>
             <button type="submit" class="btn btn-primary mt-5" id="registerBtn" disabled>Registrar</button>
+            <div class="loading-overlay">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
+            </div>
         </form>
     </div>
 
